@@ -1,0 +1,111 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: webapp-dep
+#   labels:
+#     app: webapp
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: webapp
+#   template:
+#     metadata:
+#       labels:
+#         app: webapp
+#     spec:
+#       containers:
+#       - name: webapp
+#         image: nanajanashia/k8s-demo-app:v1.0
+#         ports:
+#         - containerPort: 3000
+#         env:
+#         - name: USER_NAME
+#           ValueFrom:
+#             secretKeyRef:
+#               name: mongo-secret
+#               Key: MONGO_INITDB_ROOT_USERNAME
+
+#         - name: USER_NAME
+#           ValueFrom:
+#             secretKeyRef:
+#               name: mongo-secret
+#               Key: MONGO_INITDB_ROOT_PASSWORD
+
+#         - name: DB-URL
+#           ValueFrom:
+#             configMapRef:
+#               name: mongo-config
+#               Key: mongo-url
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: webapp-service
+# spec:
+#   type: NodePort
+#   selector:
+#     app: webapp
+#   ports:
+#     - protocol: TCP
+#       port: 3000
+#       targetPort: 3000
+#       NodePort: 30100
+
+###################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-dep
+  labels:
+    app: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: nanajanashia/k8s-demo-app:v1.0
+        ports:
+        - containerPort: 3000
+
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: MONGO_INITDB_ROOT_USERNAME
+
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: MONGO_INITDB_ROOT_PASSWORD
+
+        - name: DB_URL
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-config
+              key: mongo-url
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  type: NodePort
+  selector:
+    app: webapp
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30100

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: print-envars-greeting
+  labels:
+    app.kubernetes.io/name: MyApp
+spec:
+  containers:
+  - name: print-env-container
+    image: bash
+    env:
+    - name: GREETING 
+      value: "Welcome to"
+    - name: COMPANY
+      value: "DevOps"
+    - name: GROUP 
+      value: "Industries"
+    command: ["echo", "-c"]
+    args: ["$(GREETING)$(COMPANY)$(GROUP)"] 
+    
